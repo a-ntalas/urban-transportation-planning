@@ -1,0 +1,5 @@
+line,mode,vehicles_assigned,frequency_est,t_turn,vehicles_by_type
+A,metro,7,4.396190476190476,1846.4,{'metro_Gen II': 7}
+B,metro,8,6.291666666666666,3020.0,"{'metro_Gen II': 2, 'metro_Gen III': 6}"
+C,metro,9,5.173888888888889,2793.9,{'metro_Gen III': 9}
+T,train,4,9.330999999999998,2239.4399999999996,{'train_Standard': 4}
