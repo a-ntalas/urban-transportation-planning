@@ -2,7 +2,7 @@ import pandas as pd
 
 # file path
 # xlsx_path = "xls/Qmini.xlsx" 
-xlsx_path = "xls/train/Q2.xlsx"
+xlsx_path = "xls/train/Q.xlsx"
 sheet_name = "Sheet1"     
 
 # read the matrix; assume first column and first row are station names
@@ -39,7 +39,7 @@ print("Number of OD pairs with positive demand:", len(Q))
 total_passengers = df_numeric.iloc[1:40, 0:40].sum().sum()  # sum over rows, then columns
 
 # Load links
-df_links = pd.read_excel("xls/train/links_a_faster.xlsx")
+df_links = pd.read_excel("xls/train/links_a_faster_b_faster.xlsx")
 # df_links = pd.read_excel("xls/links_mini.xlsx")
 
 # Access velocities

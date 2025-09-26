@@ -16,8 +16,8 @@ import pickle
 
 
 # ---- User-tunable weights for weighted objective ----
-w_time = 0.0   # weight for passenger in-vehicle time objective (3)
-w_cost = 0.99    # weight for operator cost objective (4) - proxy via route lengths * vehicles
+w_time = 0.05   # weight for passenger in-vehicle time objective (3)
+w_cost = 0.95    # weight for operator cost objective (4) - proxy via route lengths * vehicles
 # w_env  = 0.2    # weight for emissions objective (5) - proxy via emissions per vehicle
 
 # Vehicle classes

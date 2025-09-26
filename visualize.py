@@ -8,7 +8,7 @@ from math import isclose
 
 from extractor import Q, A, L, total_passengers, N, V, H_min
 from model import I, J, k, n
-
+###########################################################################CHANGE THE LINKS B FASTER
 # --- Load solution ---
 with open("solution.pkl", "rb") as f:
     sol = pickle.load(f)
