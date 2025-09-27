@@ -60,8 +60,8 @@ max_route_cost = max(L[l]['route_len_m'] for l in L)
 time_norm = 2 * num_od * max_link_time     # accounts for sum over Q
 cost_norm = max_route_cost             # sum over L already reflects multiple contributions
 
-print(time_norm)
-print(cost_norm)
+# print(time_norm)
+# print(cost_norm)
 
 # Objectives
 obj_time = pulp.lpSum(Links[a]['t'] * y[((r,s),a)] for (r,s) in Q for a in A) / 1
