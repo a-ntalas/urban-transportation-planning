@@ -1,24 +1,12 @@
-"""
-Line-planning MILP (based on Jánošíková et al., 2012)
-
-Requirements:
-    pip install pulp pandas
-
-Run:
-    python line_planning_milp.py
-"""
-
 from math import isclose
 from extractor import N, P, Q, Links, A, L, A_in, A_out, H_min
 import pulp
 import pandas as pd
 import pickle
 
-
 # ---- User-tunable weights for weighted objective ----
-w_time = 0.05   # weight for passenger in-vehicle time objective (3)
-w_cost = 0.95    # weight for operator cost objective (4) - proxy via route lengths * vehicles
-# w_env  = 0.2    # weight for emissions objective (5) - proxy via emissions per vehicle
+w_time = 0.5   # weight for passenger in-vehicle time objective (3)
+w_cost = 0.5   # weight for operator cost objective (4) - proxy via route lengths * vehicles
 
 # Vehicle classes
 I = ['metro', 'train']
@@ -33,7 +21,7 @@ J = {
 k = {
     ('metro', 'Gen I'): 800,     
     ('metro', 'Gen II'): 1000,   
-    ('metro', 'Gen III'): 1050,  
+    ('metro', 'Gen III'): 1050,   ### 1200 Σχ. 6
     ('train', 'Standard'): 1500 
 }
 
@@ -45,7 +33,7 @@ n = {
     ('train', 'Standard'): 10
 }  # total fleet available
 
-# ---- Build MILP with PuLP ----
+# ---- Build Problem ----
 model = pulp.LpProblem("Line_Planning_MILP", pulp.LpMinimize)
 
 # Decision variables
@@ -80,13 +68,12 @@ obj_time = pulp.lpSum(Links[a]['t'] * y[((r,s),a)] for (r,s) in Q for a in A) / 
 
 obj_cost = pulp.lpSum(L[l]['route_len_m'] * pulp.lpSum(x[(L[l]['mode'], j, l)] for j in J[L[l]['mode']]) for l in L) / 1
 
-#  obj_env  = pulp.lpSum(emissions_per_vehicle[l] * pulp.lpSum(x[(i,j,l)] for i in I for j in J[i]) for l in L)
-
-model += w_time * obj_time + 300 *  w_cost * obj_cost #+ w_env * obj_env
+normalize = 300      # brings the two objectives close in absolute value
+model += w_time * obj_time + normalize *  w_cost * obj_cost
 
 # Constraints
 # ---------------------------
-# Capacity constraints (6)  -- mode-aware and safe lookups
+# Capacity constraints (6)
 # ---------------------------
 for a in A:
     line_id = Links[a]['line']
@@ -136,7 +123,7 @@ for i in I:
         ), f"veh_avail_{i}_{j}"
 
 # ---------------------------
-# Frequency upper bound (11) -- mode-aware, use L[l] dict iteration
+# Frequency upper bound (11) -- use L[l] dict iteration
 # ---------------------------
 for l, data in L.items():
     line_mode = data['mode']
@@ -162,7 +149,7 @@ for (r, s) in Q:
 # ---------------------------
 # Solve
 # ---------------------------
-solver = pulp.PULP_CBC_CMD(msg=True, timeLimit=15)
+solver = pulp.PULP_CBC_CMD(msg=True, timeLimit=30)
 res = model.solve(solver)
 
 print("Solver status:", pulp.LpStatus[model.status])
@@ -237,7 +224,7 @@ if 'obj_time' in globals():
     print("obj_time =", pulp.value(obj_time))
 if 'obj_cost' in globals():
     print("obj_cost =", pulp.value(obj_cost))
-    print("normalized obj_cost:", 300 * pulp.value(obj_cost))
+    print("normalized obj_cost:", normalize * pulp.value(obj_cost))
 
 with open("solution.pkl", "wb") as f:
     pickle.dump({

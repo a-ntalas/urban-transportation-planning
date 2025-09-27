@@ -8,7 +8,7 @@ from math import isclose
 
 from extractor import Q, A, L, total_passengers, N, V, H_min
 from model import I, J, k, n
-###########################################################################CHANGE THE LINKS B FASTER
+
 # --- Load solution ---
 with open("solution.pkl", "rb") as f:
     sol = pickle.load(f)
@@ -77,7 +77,7 @@ for node, (nx, ny) in pos.items():
     ax_map.scatter(nx, ny, s=450, facecolors='white', edgecolors='black', linewidths=2, zorder=3)
     ax_map.text(nx, ny, str(node), fontsize=9, ha='center', va='center', zorder=4)
 
-# ax_map.set_title("Ροή επιβατών ανά γραμμή", fontsize=14)
+ax_map.set_title("Ροή επιβατών ανά γραμμή", fontsize=14)
 ax_map.axis('off')
 
 # Colorbar
@@ -86,7 +86,7 @@ sm.set_array([])
 cbar = fig.colorbar(sm, ax=ax_map, orientation="horizontal", fraction=0.045, pad=0.02, shrink=0.7)
 cbar.set_label("Επιβάτες", fontsize=10)
 
-# --- Right panel: 3 stacked subplots ---
+# --- Right panel: 3 subplots ---
 gs_right = GridSpec(3, 1, height_ratios=[1.2, 1, 0.8],
                      left=0.68, right=0.98, top=0.95, bottom=0.05)
 ax_vehicle = fig.add_subplot(gs_right[0, 0])

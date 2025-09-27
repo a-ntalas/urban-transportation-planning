@@ -1,28 +1,23 @@
 import pandas as pd
+from collections import defaultdict
 
 # file path
-# xlsx_path = "xls/Qmini.xlsx" 
 xlsx_path = "xls/train/Q.xlsx"
 sheet_name = "Sheet1"     
 
 # read the matrix; assume first column and first row are station names
 df = pd.read_excel(xlsx_path, sheet_name=sheet_name, index_col=0)
 df_numeric = df.apply(pd.to_numeric, errors='coerce').fillna(0)
-# Optional: inspect
-print(df.shape)
-print(df.columns[:40])
-print(df.index[:])
 
 # Ensure row index and column names match and are strings
 df.index = df.index.astype(str)
 df.columns = df.columns.astype(str)
 
-
 # Build N as the list of station IDs (order follows df.columns)
 N = list(df.columns)
 
 # Build P: dictionary of (origin, destination) -> demand
-# include only positive demands (skip zeros) to keep the model small
+# include only positive demands (skip zeros)
 P = {}
 for origin in df.index:
     for dest in df.columns:
@@ -39,14 +34,15 @@ print("Number of OD pairs with positive demand:", len(Q))
 total_passengers = df_numeric.iloc[1:40, 0:40].sum().sum()  # sum over rows, then columns
 
 # Load links
-df_links = pd.read_excel("xls/train/links_a_faster_b_faster.xlsx")
-# df_links = pd.read_excel("xls/links_mini.xlsx")
+df_links = pd.read_excel("xls/train/links.xlsx")
+# df_links = pd.read_excel("xls/links_b_faster.xlsx")
 
 # Access velocities
 V = [round(df_links.iloc[0, 8],2),  # I2 -> row 2 (index 1), column I (index 7)
               round(df_links.iloc[9, 8],2), # I11 -> row 11 (index 10), column I
               round(df_links.iloc[20, 8],2), # I22 -> row 22 (index 21), column I
               round(df_links.iloc[31, 8],2)] # I33 -> row 33 (index 32), column I
+
 # Build the link dictionary
 Links_forwards = {}
 Links_backwards = {}
@@ -82,11 +78,10 @@ for idx, row in df_links.iterrows():
         't': float(row['sec']) , # travel time [seconds]
         'len': float(row['m']),        # length [meters]
         'mode': str(row['mode'])
-
     }
 
 # Sets
-A = list(Links.keys())                       # list of directed links
+A = list(Links.keys())     # list of directed links
 
 # print(Links)
 print("Links are", len(A), "\n")
@@ -99,14 +94,11 @@ for (o, d) in Links.keys():
     A_out[o].append((o,d))
     A_in[d].append((o,d))
 
-
-from collections import defaultdict
-
 # Parameters
-H_min = 240.0          # horizon length in minutes (07:00–10:00)
-headway_min = 2        # at most one departure every 5 minutes per direction
-# dwell_per_stop_min = 0.3  # dwell time at each stop (example: 18 sec)
-layover_sec = 15.0         # layover at terminal (example)
+H_min = 240.0          # horizon length in minutes (07:00–11:00)
+headway_min = 2        # at most one departure every 2 minutes per direction
+# dwell_per_stop_min = 0.3  # dwell time at each stop (example: 18 sec)  ##UNUSED
+layover_sec = 15.0         # extra layover time at terminal PER STOP
 
 # Group links by line
 line_links = defaultdict(list)
