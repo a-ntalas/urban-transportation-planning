@@ -149,7 +149,7 @@ for (r, s) in Q:
 # ---------------------------
 # Solve
 # ---------------------------
-solver = pulp.PULP_CBC_CMD(msg=True, timeLimit=30)
+solver = pulp.PULP_CBC_CMD(msg=True, timeLimit=20)              #### INCREASE TIME LIMIT IF PROBLEM IS NOT SOLVED 
 res = model.solve(solver)
 
 print("Solver status:", pulp.LpStatus[model.status])
